@@ -1,0 +1,41 @@
+# Copy this file to your project root as `docker-claude.config`, then
+# edit the values. It's plain bash — sourced by docker-claude/run.sh.
+
+# Base image that Claude layers on top of. Either a public image or
+# one your project builds. If you use a project-owned image, also set
+# BASE_IMAGE_CONTEXT below so run.sh can build it.
+BASE_IMAGE="debian:bookworm-slim"
+
+# Uncomment if BASE_IMAGE is a locally-built project image:
+# BASE_IMAGE_CONTEXT="$PROJECT_DIR"
+# BASE_IMAGE_DOCKERFILE="Dockerfile"
+
+# Distinct Claude image name so projects don't collide.
+IMAGE_NAME="my-project-claude"
+
+# Outbound allow-list (space-separated). Minimum: api.anthropic.com.
+# Add package registries your project needs, e.g. pypi.org, files.pythonhosted.org,
+# registry.npmjs.org, registry.yarnpkg.com, crates.io.
+ALLOWED_DOMAINS="api.anthropic.com sentry.io"
+
+# What to send Claude on launch. Usually a pointer at your project's
+# session playbook.
+#
+# The companion file `docker-claude/system-prompt.md` holds generic
+# cross-project conventions (two-file memory split, session phases,
+# continuous-run mode via usage.sh, etc.). Referencing it is
+# optional — skip if your project derives those conventions itself.
+#
+# A "run continuously until usage is above X%" loop works out of the
+# box when system-prompt.md is loaded: the assistant will self-pace
+# back-to-back sessions against ./docker-claude/usage.sh and stop
+# only when the target is hit.
+CLAUDE_PROMPT="Read docker-claude/system-prompt.md and docs/docker-claude.md, then resume work."
+
+# Resource caps. Raise for projects that compile large codebases.
+MEMORY_LIMIT="4g"
+PIDS_LIMIT="2048"
+# CPU_LIMIT="4"   # e.g. "4" to cap at 4 cores; unset = no limit
+
+# Extra docker-run args, if your project needs more mounts or env:
+# EXTRA_DOCKER_ARGS=(-v "$PROJECT_DIR/data:/data:ro" -e FOO=bar)
