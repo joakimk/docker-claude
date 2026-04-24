@@ -38,6 +38,21 @@ else
     echo "No Docker DNS rules to restore"
 fi
 
+# 1b. Lock down IPv6 — the v4 rules below don't cover IPv6, so without
+#     this any v6-reachable host bypasses the allow-list entirely.
+if command -v ip6tables >/dev/null 2>&1; then
+    ip6tables -F
+    ip6tables -X
+    ip6tables -A INPUT  -i lo -j ACCEPT
+    ip6tables -A OUTPUT -o lo -j ACCEPT
+    ip6tables -P INPUT   DROP
+    ip6tables -P FORWARD DROP
+    ip6tables -P OUTPUT  DROP
+    echo "IPv6 locked down (all non-loopback traffic dropped)"
+else
+    echo "WARNING: ip6tables not found — IPv6 traffic is unfiltered"
+fi
+
 # Allow DNS and loopback before locking down.
 iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 iptables -A INPUT  -p udp --sport 53 -j ACCEPT
@@ -45,9 +60,11 @@ iptables -A INPUT  -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
 
 # Resolve allow-list domains to IPs and add individual iptables rules.
+# dig +short follows CNAME chains to their final A records; the grep
+# filters out intermediate CNAME lines, keeping only IPv4 addresses.
 for domain in "${DOMAINS[@]}"; do
     echo "Resolving $domain..."
-    ips=$(dig +noall +answer A "$domain" | awk '$4 == "A" {print $5}')
+    ips=$(dig +short A "$domain" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$')
     if [ -z "$ips" ]; then
         echo "WARNING: Failed to resolve $domain, skipping"
         continue
