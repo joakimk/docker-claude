@@ -12,6 +12,14 @@ set -euo pipefail
 WORKSPACE="${WORKSPACE:-/workspace}"
 PROMPT="${*:-}"
 
+# Optional model pin. If CLAUDE_MODEL is set (e.g. "claude-opus-4-6[1m]"),
+# launch claude with --model that value; otherwise let the CLI pick its
+# default.
+CLAUDE_MODEL_ARG=""
+if [ -n "${CLAUDE_MODEL:-}" ]; then
+    CLAUDE_MODEL_ARG="--model $(printf '%q' "$CLAUDE_MODEL")"
+fi
+
 cd "$WORKSPACE"
 
 # Drop to the unprivileged dev user. We use setpriv instead of su
@@ -34,9 +42,9 @@ if [ -n "$PROMPT" ]; then
     QUOTED_PROMPT=$(printf '%q' "$PROMPT")
     exec setpriv --reuid="$DEV_UID" --regid="$DEV_GID" --init-groups \
         "${CLEAN_ENV[@]}" \
-        bash -l -c "cd '$WORKSPACE' && exec claude --dangerously-skip-permissions $QUOTED_PROMPT"
+        bash -l -c "cd '$WORKSPACE' && exec claude --dangerously-skip-permissions $CLAUDE_MODEL_ARG $QUOTED_PROMPT"
 else
     exec setpriv --reuid="$DEV_UID" --regid="$DEV_GID" --init-groups \
         "${CLEAN_ENV[@]}" \
-        bash -l -c "cd '$WORKSPACE' && exec claude --dangerously-skip-permissions"
+        bash -l -c "cd '$WORKSPACE' && exec claude --dangerously-skip-permissions $CLAUDE_MODEL_ARG"
 fi

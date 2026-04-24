@@ -1,10 +1,3 @@
-# Warning
-
-NOTE: Experimental. **Only run this if you know what it's doing and are okay with any risks**.
-
-- Never run it with sensitive data or outside data you have not validated because unknown issues could cause the LLM to leak it accidentally, or read some of that data as a prompt to do things you did not intend.
-- The intended use case for this is to have claude automatically build and maintain software in isolation over multiple sessions using overall goals, self verification and occasional user input to keep it on the right track.
-
 # docker-claude
 
 Run Claude Code in a hardened, firewalled container with **per-project

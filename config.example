@@ -32,6 +32,11 @@ ALLOWED_DOMAINS="api.anthropic.com sentry.io"
 # only when the target is hit.
 CLAUDE_PROMPT="Read docker-claude/system-prompt.md and docs/docker-claude.md, then resume work."
 
+# Optional model pin. If set, run.sh passes it through to the container
+# and entrypoint.sh launches `claude --model "$CLAUDE_MODEL"`. Leave
+# unset to let the Claude Code CLI pick its default.
+# CLAUDE_MODEL="claude-opus-4-6[1m]"
+
 # Resource caps. Raise for projects that compile large codebases.
 MEMORY_LIMIT="4g"
 PIDS_LIMIT="2048"

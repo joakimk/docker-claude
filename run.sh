@@ -41,6 +41,11 @@ ALLOWED_DOMAINS="api.anthropic.com sentry.io"
 # Prompt sent to Claude on launch when no CLI argument is passed.
 CLAUDE_PROMPT=""
 
+# Optional model pin (e.g. "claude-opus-4-6[1m]"). Empty = let the CLI
+# pick its default. Passed through to the container as env and applied
+# by entrypoint.sh as `claude --model "$CLAUDE_MODEL"`.
+CLAUDE_MODEL=""
+
 # Workspace mount. Default is the project dir → /workspace read-write.
 WORKSPACE_MOUNT="$PROJECT_DIR:/workspace"
 WORKSPACE_PATH="/workspace"
@@ -149,6 +154,7 @@ DOCKER_ARGS=(
     -e CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=true
     -e ALLOWED_DOMAINS="$ALLOWED_DOMAINS"
     -e WORKSPACE="$WORKSPACE_PATH"
+    -e CLAUDE_MODEL="$CLAUDE_MODEL"
     -v "$WORKSPACE_MOUNT"
     -v "$CLAUDE_STATE_DIR/home:/home/dev/.claude"
     -v "$CLAUDE_STATE_DIR/claude.json:/home/dev/.claude.json"
