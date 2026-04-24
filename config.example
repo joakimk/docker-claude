@@ -30,7 +30,7 @@ ALLOWED_DOMAINS="api.anthropic.com sentry.io"
 # box when system-prompt.md is loaded: the assistant will self-pace
 # back-to-back sessions against ./docker-claude/usage.sh and stop
 # only when the target is hit.
-CLAUDE_PROMPT="Read docker-claude/system-prompt.md and docs/docker-claude.md, then resume work."
+CLAUDE_PROMPT="Read docker-claude/system-prompt.md, docs/docker-claude.md and docs/docker-claude.memory.md, then resume work."
 
 # Optional model pin. If set, run.sh passes it through to the container
 # and entrypoint.sh launches `claude --model "$CLAUDE_MODEL"`. Leave
