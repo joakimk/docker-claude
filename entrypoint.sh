@@ -14,6 +14,11 @@ PROMPT="${*:-}"
 
 cd "$WORKSPACE"
 
+# Git identity so commits work. Override via GIT_AUTHOR_NAME /
+# GIT_AUTHOR_EMAIL env vars in docker-claude.config's EXTRA_DOCKER_ARGS.
+git config --system user.name  "${GIT_AUTHOR_NAME:-Claude Code}"
+git config --system user.email "${GIT_AUTHOR_EMAIL:-claude@docker-claude}"
+
 # Drop to the unprivileged dev user. We use setpriv instead of su
 # because su is a setuid binary blocked by --security-opt=no-new-privileges.
 # setpriv uses capabilities directly (CAP_SETUID/CAP_SETGID granted to
