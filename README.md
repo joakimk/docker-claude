@@ -1,8 +1,9 @@
 # docker-claude
 
-Run Claude Code in a hardened, firewalled container with **per-project
-isolated credentials**. Drop this directory into any repo, write a
-short config, run one script.
+Run Claude Code in a hardened (as possible), firewalled container with per-project
+isolated credentials. Drop this directory into any repo, write a short config, run one script.
+
+WARNING: Only use this if you know what it all does and accept any risks.
 
 ## What you get
 

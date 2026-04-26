@@ -85,30 +85,43 @@ entry becomes obsolete, prune it.
 ## Mandatory session phases
 
 Each session follows a fixed order. Don't skip phases; don't reorder
-them.
+them. **Domain work gets 80% of session time.** Refactor, optimize,
+and docs share the remaining 20%. Each session should run for **at
+least 20 minutes** of real work — long enough to make meaningful
+progress, but don't try to fill the full 5-hour window. The budget
+gates (30% normal / 90% spare) are the hard ceilings; within those
+limits, run until the current work thread is at a natural stopping
+point. Try many things, go deep on promising leads.
+A session with 30+ experiments is better than one with 5.
 
-### 1. Refactor (before any new work)
+### 1. Refactor + optimize (5-10% of session, before domain work)
 
-At least one small refactor edit lands before touching the domain
-work. Leave the repo cleaner than you found it. Rules:
+One small refactor OR optimization edit before touching the domain
+work. Rules:
 
-- **Behavior-preserving.** Whatever your project's "known good"
-  verification is (bit-identical stats, golden files, passing tests,
-  etc.) must hold before/after.
-- **Tests pass.** Extracted helpers get their own unit tests.
-- **Spend 20-30% of session time** on this, not "5 minutes". The
-  maintainability compounding is the point.
-- If after 30 min you genuinely find nothing worth refactoring, write
-  a paragraph in memory explaining what you considered and rejected.
-  "Didn't have time" is not acceptable.
+- **Behavior-preserving.** Known-good verification must hold.
+- **Tests pass.** Extracted helpers get unit tests.
+- **Quick.** Pick the highest-impact item you can land in 10-15
+  minutes. Don't spend 45 minutes hunting for a refactor target —
+  if nothing obvious, skip with a one-line note.
+- Optimization: prefer structural wins (fewer allocations, caching,
+  better data layout). If nothing is slow, skip.
 
-### 2. Domain work (the actual goal of the session)
+### 2. Domain work (80% of session — the actual goal)
 
 Whatever the project's main loop is — experiments, feature
 implementation, bug fixing, whatever. Stay within the scope the user
 set. Don't scope-creep into fixing unrelated things.
 
-### 3. Documentation refactor (before ending)
+**Go wide and deep.** Run many experiments per session. Use
+`FORMAT=compact` to keep token cost low. Batch independent sweeps
+in parallel. When a lead looks promising, follow it through MC
+validation in the same session — don't defer to "next session."
+When stuck, try genuinely new mechanisms (new indicators, new
+filters, structural changes) rather than re-sweeping exhausted
+parameters.
+
+### 3. Documentation refactor (5-10% of session, before ending)
 
 Every session ends by refactoring the memory file itself.
 
@@ -145,7 +158,7 @@ Before wrapping:
 - [ ] "What to try next session" list — always include ≥3 items,
       categorized by priority (live gap, follow-ups, meta-process,
       refactor targets).
-- [ ] Docs refactor landed (the phase 3 above) — pruned stale
+- [ ] Docs refactor landed (phase 4 above) — pruned stale
       entries, fixed drift, split or merged sections if they grew.
 
 ## Continuous-run mode
@@ -269,6 +282,26 @@ and document**.
 Record the applied rule + reasoning in the relevant commit message
 / code comment / memory entry, so future sessions can audit the
 decision trail without needing to ask the user.
+
+## Token-efficient tooling
+
+Every script or command whose output you consume regularly should
+have a compact machine-readable mode from the start. Human-readable
+tables waste tokens — a 40-line formatted table and a 1-line summary
+carry the same information but the table costs 10× the context.
+
+When building or modifying CLI tools, reporting scripts, or backtest
+harnesses:
+
+- **Add a `FORMAT=compact` (or `--compact`) mode** that emits one or
+  two lines of key=value or structured text. Design this first — the
+  pretty table is the optional extra, not the other way around.
+- **Use compact mode by default in automated/continuous-run sessions.**
+  Reserve the human-readable format for interactive debugging.
+- **Grep-friendly > pretty.** Prefer `key=value` pairs, single-line
+  records, and fixed field order over aligned columns and separators.
+- **Suppress progress bars, headers, and decoration** in compact mode.
+  Only emit the result.
 
 ## Parallelism defaults
 
